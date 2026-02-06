@@ -17,6 +17,10 @@ mkdir -p ~/.config
 # O VS Code clona o repo em ~/dotfiles por padrão
 ln -sf ~/dotfiles/starship.toml ~/.config/starship.toml
 
+# 2.5. Corrigir cedilha no Bluefin (Wayland/GNOME)
+echo "Configurando cedilha..."
+bash ~/dotfiles/fix-cedilla-bluefin.sh
+
 # 3. Adicionar init ao .bashrc (se não estiver lá)
 if ! grep -q "starship init bash" ~/.bashrc; then
     echo 'eval "$(starship init bash)"' >> ~/.bashrc
