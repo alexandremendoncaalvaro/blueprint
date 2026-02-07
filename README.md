@@ -22,29 +22,32 @@ O programa organiza configurações em **módulos** independentes, filtrados por
 
 ## Instalação
 
+Uma linha — clona, compila e abre o TUI:
+
 ```bash
-git clone https://github.com/ale/dotfiles.git ~/dotfiles
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ale/dotfiles/main/scripts/install.sh)"
+```
+
+Já clonou? Só rodar:
+
+```bash
 cd ~/dotfiles
-make build
+make run
 ```
 
-O binário fica em `bin/dotfiles`. Para colocar no PATH:
-
-```bash
-mkdir -p ~/.local/bin
-ln -sf ~/dotfiles/bin/dotfiles ~/.local/bin/dotfiles
-```
-
-> Requer Go 1.24+. No Bluefin, compile dentro de um distrobox com Go instalado.
+> Requer Go 1.24+. O script instala automaticamente se não encontrar.
 
 ## Uso
 
 ```bash
-# TUI interativo (perfil full)
+# Detecta o ambiente e abre o TUI com os módulos certos
 dotfiles apply
 
-# Headless com perfil específico
-dotfiles apply -p minimal --headless
+# Forçar um perfil específico
+dotfiles apply -p minimal
+
+# Headless (sem TUI)
+dotfiles apply --headless
 
 # Simular sem executar
 dotfiles apply --dry-run --headless
@@ -54,10 +57,17 @@ dotfiles status
 
 # Atualizar sistema (atalho para bluefin-update)
 dotfiles update
-
-# Versão
-dotfiles version
 ```
+
+O perfil é detectado automaticamente:
+
+| Contexto | Perfil | Razão |
+|----------|--------|-------|
+| Container | `minimal` | Sem desktop, sem system |
+| Sem sessão gráfica | `server` | Sem desktop |
+| Desktop normal | `full` | Tudo disponível |
+
+Use `--profile` / `-p` para sobrescrever.
 
 ## Estrutura
 

@@ -26,6 +26,6 @@ clean:
 lint:
 	go vet ./...
 
-## run: Compila e executa
+## run: Compila e abre o TUI
 run: build
-	./bin/$(BINARY)
+	./bin/$(BINARY) apply

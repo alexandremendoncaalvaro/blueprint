@@ -14,7 +14,7 @@ func newApplyCmd(app *App) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "apply [perfil]",
 		Short: "Aplicar configuracoes do perfil selecionado",
-		Long:  "Aplica todos os modulos do perfil. Sem argumentos, usa o perfil definido em --profile.",
+		Long:  "Aplica todos os modulos do perfil. Sem argumentos, detecta o perfil automaticamente.",
 		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Perfil via argumento tem prioridade
@@ -22,10 +22,20 @@ func newApplyCmd(app *App) *cobra.Command {
 				app.Options.Profile = args[0]
 			}
 
-			prof, err := profile.ByName(app.Options.Profile)
-			if err != nil {
-				return err
+			// Resolve perfil: auto-detecta ou usa o explicito
+			autoDetected := false
+			var prof profile.Profile
+			if app.Options.Profile == "auto" {
+				prof = profile.Detect(app.System)
+				autoDetected = true
+			} else {
+				var err error
+				prof, err = profile.ByName(app.Options.Profile)
+				if err != nil {
+					return err
+				}
 			}
+
 			modules := profile.Resolve(prof, app.Registry)
 
 			if len(modules) == 0 {
@@ -44,7 +54,7 @@ func newApplyCmd(app *App) *cobra.Command {
 			mode := DetectMode(app.Options.Headless)
 
 			if mode == Interactive {
-				return tui.Run(app.Registry, sys, prof)
+				return tui.Run(app.Registry, sys, prof, autoDetected)
 			}
 
 			// Modo headless

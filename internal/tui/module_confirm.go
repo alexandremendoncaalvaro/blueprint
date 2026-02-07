@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/dotfiles/internal/profile"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -16,9 +17,11 @@ type moduleEntry struct {
 
 // moduleConfirmModel permite ativar/desativar modulos individualmente.
 type moduleConfirmModel struct {
-	entries []moduleEntry
-	cursor  int
-	done    bool
+	entries      []moduleEntry
+	cursor       int
+	done         bool
+	profile      profile.Profile
+	autoDetected bool
 }
 
 func newModuleConfirmModel(modules []module.Module) moduleConfirmModel {
@@ -58,8 +61,17 @@ func (m moduleConfirmModel) Update(msg tea.Msg) (moduleConfirmModel, tea.Cmd) {
 func (m moduleConfirmModel) View() string {
 	var b strings.Builder
 
-	b.WriteString(titleStyle.Render("Confirmar modulos"))
-	b.WriteString("\n\n")
+	if m.autoDetected {
+		b.WriteString(titleStyle.Render("Dotfiles Manager"))
+		b.WriteString("\n\n")
+		b.WriteString(fmt.Sprintf("Perfil detectado: %s", highlightStyle.Render(m.profile.Name)))
+		b.WriteString(mutedStyle.Render(fmt.Sprintf(" — %s", m.profile.Description)))
+		b.WriteString("\n\n")
+		b.WriteString("Modulos selecionados:\n\n")
+	} else {
+		b.WriteString(titleStyle.Render("Confirmar modulos"))
+		b.WriteString("\n\n")
+	}
 
 	for i, e := range m.entries {
 		cursor := "  "

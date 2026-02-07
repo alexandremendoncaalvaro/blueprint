@@ -22,11 +22,12 @@ const (
 
 // model e o Model raiz do Bubble Tea (state machine de telas).
 type model struct {
-	screen   screen
-	registry *module.Registry
-	modules  []module.Module
-	sys      module.System
-	profile  profile.Profile
+	screen       screen
+	registry     *module.Registry
+	modules      []module.Module
+	sys          module.System
+	profile      profile.Profile
+	autoDetected bool
 
 	// Estado das telas
 	welcome       welcomeModel
@@ -38,15 +39,30 @@ type model struct {
 
 // Run inicia o TUI interativo.
 // Recebe o registry completo para que a troca de perfil no TUI funcione corretamente.
-func Run(registry *module.Registry, sys module.System, prof profile.Profile) error {
+// Se autoDetected=true, pula a selecao de perfil e vai direto para confirmacao de modulos.
+func Run(registry *module.Registry, sys module.System, prof profile.Profile, autoDetected bool) error {
 	modules := profile.Resolve(prof, registry)
+
+	// Se o perfil foi auto-detectado, pula direto para confirmacao de modulos
+	initialScreen := screenWelcome
+	if autoDetected {
+		initialScreen = screenModuleConfirm
+	}
+
 	m := model{
-		screen:   screenWelcome,
-		registry: registry,
-		modules:  modules,
-		sys:      sys,
-		profile:  prof,
-		welcome:  newWelcomeModel(),
+		screen:       initialScreen,
+		registry:     registry,
+		modules:      modules,
+		sys:          sys,
+		profile:      prof,
+		autoDetected: autoDetected,
+		welcome:      newWelcomeModel(),
+	}
+
+	if autoDetected {
+		m.moduleConfirm = newModuleConfirmModel(modules)
+		m.moduleConfirm.profile = prof
+		m.moduleConfirm.autoDetected = true
 	}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
@@ -133,6 +149,7 @@ func (m model) updateProfileSelect(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.screen = screenModuleConfirm
 		m.moduleConfirm = newModuleConfirmModel(m.modules)
+		m.moduleConfirm.profile = m.profile
 		return m, nil
 	}
 

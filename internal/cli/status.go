@@ -15,9 +15,15 @@ func newStatusCmd(app *App) *cobra.Command {
 		Use:   "status",
 		Short: "Mostrar estado dos modulos",
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			prof, err := profile.ByName(app.Options.Profile)
-			if err != nil {
-				return err
+			var prof profile.Profile
+			if app.Options.Profile == "auto" {
+				prof = profile.Detect(app.System)
+			} else {
+				var err error
+				prof, err = profile.ByName(app.Options.Profile)
+				if err != nil {
+					return err
+				}
 			}
 			modules := profile.Resolve(prof, app.Registry)
 

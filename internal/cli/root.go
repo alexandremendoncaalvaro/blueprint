@@ -33,7 +33,7 @@ func NewRootCmd(app *App) *cobra.Command {
 
 	// Flags globais
 	cmd.PersistentFlags().BoolVar(&app.Options.Headless, "headless", false, "Modo headless (sem TUI)")
-	cmd.PersistentFlags().StringVarP(&app.Options.Profile, "profile", "p", "full", "Perfil de instalacao (full, minimal, server)")
+	cmd.PersistentFlags().StringVarP(&app.Options.Profile, "profile", "p", "auto", "Perfil de instalacao (auto, full, minimal, server)")
 	cmd.PersistentFlags().BoolVar(&app.Options.DryRun, "dry-run", false, "Mostrar o que seria feito sem executar")
 	cmd.PersistentFlags().BoolVarP(&app.Options.Verbose, "verbose", "v", false, "Saida detalhada")
 
