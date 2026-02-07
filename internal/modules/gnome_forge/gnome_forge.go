@@ -129,6 +129,32 @@ func (m *Module) Apply(ctx context.Context, sys module.System, reporter module.R
 	return nil
 }
 
+// Details retorna detalhes granulares do estado do Forge.
+func (m *Module) Details(ctx context.Context, sys module.System) []module.Detail {
+	out, err := sys.Exec(ctx, "gnome-extensions", "show", forgeUUID)
+
+	installed := err == nil && strings.Contains(out, forgeUUID)
+	enabled := installed && strings.Contains(out, "ENABLED")
+
+	// Verificar um atalho representativo
+	focusLeft, _ := sys.Exec(ctx, "dconf", "read",
+		"/org/gnome/shell/extensions/forge/keybindings/window-focus-left")
+	hasKeys := strings.Contains(focusLeft, "<Super>Left")
+
+	return []module.Detail{
+		{Key: "Forge extensão", Value: boolStr(installed, "instalada", "ausente"), OK: installed},
+		{Key: "Forge estado", Value: boolStr(enabled, "ativo", "desativado"), OK: enabled},
+		{Key: "Atalhos", Value: boolStr(hasKeys, "Super+setas configurados", "pendentes"), OK: hasKeys},
+	}
+}
+
+func boolStr(ok bool, yes, no string) string {
+	if ok {
+		return yes
+	}
+	return no
+}
+
 // extensionInfo representa a resposta da API do extensions.gnome.org.
 type extensionInfo struct {
 	DownloadURL string `json:"download_url"`

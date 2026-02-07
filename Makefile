@@ -8,7 +8,7 @@ LDFLAGS := -s -w \
 	-X $(PKG)/internal/version.Commit=$(COMMIT) \
 	-X $(PKG)/internal/version.Date=$(DATE)
 
-.PHONY: build test clean lint run
+.PHONY: build test clean lint run status
 
 ## build: Compila o binario em bin/
 build:
@@ -29,3 +29,7 @@ lint:
 ## run: Resolve dependencias, compila e abre o TUI
 run:
 	@bash scripts/install.sh
+
+## status: Mostra estado detalhado dos modulos
+status: build
+	@./bin/$(BINARY) status
