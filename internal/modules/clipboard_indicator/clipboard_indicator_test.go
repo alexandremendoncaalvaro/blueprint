@@ -86,6 +86,22 @@ func TestCheck_Installed(t *testing.T) {
 	}
 }
 
+func TestCheck_OutOfDate(t *testing.T) {
+	mock := system.NewMock()
+	mock.ExecResults["gnome-extensions show clipboard-indicator@tudmotu.com"] = system.ExecResult{
+		Output: "clipboard-indicator@tudmotu.com\n  Enabled: Yes\n  State: OUT OF DATE\n",
+	}
+
+	mod := New()
+	status, err := mod.Check(context.Background(), mock)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if status.Kind != module.Partial {
+		t.Errorf("esperava Partial para OUT OF DATE, obteve %v", status.Kind)
+	}
+}
+
 func TestCheck_Partial(t *testing.T) {
 	mock := system.NewMock()
 	mock.ExecResults["gnome-extensions show clipboard-indicator@tudmotu.com"] = system.ExecResult{

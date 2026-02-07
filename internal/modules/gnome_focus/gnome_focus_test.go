@@ -78,6 +78,73 @@ func TestCheck_Installed(t *testing.T) {
 	}
 }
 
+func TestCheck_OutOfDate(t *testing.T) {
+	mock := system.NewMock()
+	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
+		Output: "focus-mode@dotfiles\n  Enabled: Yes\n  State: OUT OF DATE\n",
+	}
+
+	mod := New("/configs/focus-mode")
+	status, err := mod.Check(context.Background(), mock)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if status.Kind != module.Partial {
+		t.Errorf("esperava Partial para OUT OF DATE, obteve %s", status.Kind)
+	}
+}
+
+func TestCheck_Error(t *testing.T) {
+	mock := system.NewMock()
+	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
+		Output: "focus-mode@dotfiles\n  Enabled: Yes\n  State: ERROR\n",
+	}
+
+	mod := New("/configs/focus-mode")
+	status, err := mod.Check(context.Background(), mock)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if status.Kind != module.Partial {
+		t.Errorf("esperava Partial para ERROR, obteve %s", status.Kind)
+	}
+}
+
+func TestCheck_Disabled(t *testing.T) {
+	mock := system.NewMock()
+	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
+		Output: "focus-mode@dotfiles\n  Enabled: No\n  State: INACTIVE\n",
+	}
+
+	mod := New("/configs/focus-mode")
+	status, err := mod.Check(context.Background(), mock)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if status.Kind != module.Partial {
+		t.Errorf("esperava Partial para desativado, obteve %s", status.Kind)
+	}
+}
+
+func TestCheck_DynamicWorkspacesDisabled(t *testing.T) {
+	mock := system.NewMock()
+	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
+		Output: "focus-mode@dotfiles\n  Enabled: Yes\n  State: ACTIVE\n",
+	}
+	mock.ExecResults["dconf read /org/gnome/mutter/dynamic-workspaces"] = system.ExecResult{
+		Output: "false",
+	}
+
+	mod := New("/configs/focus-mode")
+	status, err := mod.Check(context.Background(), mock)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if status.Kind != module.Partial {
+		t.Errorf("esperava Partial para dynamic-workspaces=false, obteve %s", status.Kind)
+	}
+}
+
 func TestApply_InstallsAndEnables(t *testing.T) {
 	mock := system.NewMock()
 	mock.Commands["gnome-extensions"] = true

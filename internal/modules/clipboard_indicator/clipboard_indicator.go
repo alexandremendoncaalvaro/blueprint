@@ -41,6 +41,9 @@ func (m *Module) Check(ctx context.Context, sys module.System) (module.Status, e
 		return module.Status{Kind: module.Missing, Message: "Clipboard Indicator nao instalado"}, nil
 	}
 	if strings.Contains(out, "Enabled: Yes") {
+		if strings.Contains(out, "OUT OF DATE") {
+			return module.Status{Kind: module.Partial, Message: "Clipboard Indicator desatualizado (faca logout/login ou atualize a extensao)"}, nil
+		}
 		return module.Status{Kind: module.Installed, Message: "Clipboard Indicator instalado e ativo"}, nil
 	}
 	return module.Status{Kind: module.Partial, Message: "Clipboard Indicator instalado mas desativado"}, nil

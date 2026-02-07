@@ -88,6 +88,38 @@ func TestCheck_Installed(t *testing.T) {
 	}
 }
 
+func TestCheck_OutOfDate(t *testing.T) {
+	mock := system.NewMock()
+	mock.ExecResults["gnome-extensions show forge@jmmaranan.com"] = system.ExecResult{
+		Output: "forge@jmmaranan.com\n  Enabled: Yes\n  State: OUT OF DATE\n",
+	}
+
+	mod := New()
+	status, err := mod.Check(context.Background(), mock)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if status.Kind != module.Partial {
+		t.Errorf("esperava Partial para OUT OF DATE, obteve %s", status.Kind)
+	}
+}
+
+func TestCheck_Disabled(t *testing.T) {
+	mock := system.NewMock()
+	mock.ExecResults["gnome-extensions show forge@jmmaranan.com"] = system.ExecResult{
+		Output: "forge@jmmaranan.com\n  Enabled: No\n  State: INACTIVE\n",
+	}
+
+	mod := New()
+	status, err := mod.Check(context.Background(), mock)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+	if status.Kind != module.Partial {
+		t.Errorf("esperava Partial para desativado, obteve %s", status.Kind)
+	}
+}
+
 func TestApply_AlreadyInstalled(t *testing.T) {
 	mock := system.NewMock()
 	mock.Commands["gnome-extensions"] = true

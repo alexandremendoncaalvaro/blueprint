@@ -50,6 +50,12 @@ func (m *Module) Check(ctx context.Context, sys module.System) (module.Status, e
 	if !strings.Contains(out, "Enabled: Yes") {
 		return module.Status{Kind: module.Partial, Message: "Focus-mode instalado mas desativado"}, nil
 	}
+	if strings.Contains(out, "OUT OF DATE") {
+		return module.Status{Kind: module.Partial, Message: "Focus-mode desatualizado (faca logout/login ou atualize shell-version)"}, nil
+	}
+	if strings.Contains(out, "ERROR") {
+		return module.Status{Kind: module.Partial, Message: "Focus-mode com erro (verifique logs: journalctl -f -o cat /usr/bin/gnome-shell)"}, nil
+	}
 
 	// Verifica dynamic workspaces
 	dynWs, _ := sys.Exec(ctx, "dconf", "read", "/org/gnome/mutter/dynamic-workspaces")

@@ -81,6 +81,9 @@ func (m *Module) Check(ctx context.Context, sys module.System) (module.Status, e
 		return module.Status{Kind: module.Missing, Message: "Forge nao instalado"}, nil
 	}
 	if strings.Contains(out, "Enabled: Yes") {
+		if strings.Contains(out, "OUT OF DATE") {
+			return module.Status{Kind: module.Partial, Message: "Forge desatualizado (faca logout/login ou atualize a extensao)"}, nil
+		}
 		return module.Status{Kind: module.Installed, Message: "Forge instalado e ativo"}, nil
 	}
 	return module.Status{Kind: module.Partial, Message: "Forge instalado mas desativado"}, nil
