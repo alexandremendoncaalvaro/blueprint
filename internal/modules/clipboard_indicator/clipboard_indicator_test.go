@@ -73,7 +73,7 @@ func TestCheck_Missing(t *testing.T) {
 func TestCheck_Installed(t *testing.T) {
 	mock := system.NewMock()
 	mock.ExecResults["gnome-extensions show clipboard-indicator@tudmotu.com"] = system.ExecResult{
-		Output: "clipboard-indicator@tudmotu.com\n  State: ENABLED\n",
+		Output: "clipboard-indicator@tudmotu.com\n  Enabled: Yes\n  State: ACTIVE\n",
 	}
 
 	mod := New()
@@ -89,7 +89,7 @@ func TestCheck_Installed(t *testing.T) {
 func TestCheck_Partial(t *testing.T) {
 	mock := system.NewMock()
 	mock.ExecResults["gnome-extensions show clipboard-indicator@tudmotu.com"] = system.ExecResult{
-		Output: "clipboard-indicator@tudmotu.com\n  State: DISABLED\n",
+		Output: "clipboard-indicator@tudmotu.com\n  Enabled: No\n  State: INACTIVE\n",
 	}
 
 	mod := New()

@@ -62,7 +62,7 @@ func TestCheck_Missing(t *testing.T) {
 func TestCheck_Installed(t *testing.T) {
 	mock := system.NewMock()
 	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
-		Output: "focus-mode@dotfiles\n  State: ENABLED\n",
+		Output: "focus-mode@dotfiles\n  Enabled: Yes\n  State: ACTIVE\n",
 	}
 	mock.ExecResults["dconf read /org/gnome/mutter/dynamic-workspaces"] = system.ExecResult{
 		Output: "true",

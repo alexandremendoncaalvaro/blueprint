@@ -75,7 +75,7 @@ func TestCheck_Missing(t *testing.T) {
 func TestCheck_Installed(t *testing.T) {
 	mock := system.NewMock()
 	mock.ExecResults["gnome-extensions show forge@jmmaranan.com"] = system.ExecResult{
-		Output: "forge@jmmaranan.com\n  Name: Forge\n  State: ENABLED\n",
+		Output: "forge@jmmaranan.com\n  Name: Forge\n  Enabled: Yes\n  State: ACTIVE\n",
 	}
 
 	mod := New()
@@ -95,7 +95,7 @@ func TestApply_AlreadyInstalled(t *testing.T) {
 	mock.Commands["dconf"] = true
 	mock.ExecResults["gnome-shell --version"] = system.ExecResult{Output: "GNOME Shell 46.2"}
 	mock.ExecResults["gnome-extensions show forge@jmmaranan.com"] = system.ExecResult{
-		Output: "forge@jmmaranan.com\n  State: ENABLED\n",
+		Output: "forge@jmmaranan.com\n  Enabled: Yes\n  State: ACTIVE\n",
 	}
 
 	mod := New()

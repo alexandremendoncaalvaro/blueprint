@@ -47,7 +47,7 @@ func (m *Module) Check(ctx context.Context, sys module.System) (module.Status, e
 	if err != nil {
 		return module.Status{Kind: module.Missing, Message: "Extensao focus-mode nao instalada"}, nil
 	}
-	if !strings.Contains(out, "ENABLED") {
+	if !strings.Contains(out, "Enabled: Yes") {
 		return module.Status{Kind: module.Partial, Message: "Focus-mode instalado mas desativado"}, nil
 	}
 
@@ -97,5 +97,3 @@ func (m *Module) Apply(ctx context.Context, sys module.System, reporter module.R
 
 	return nil
 }
-
-
