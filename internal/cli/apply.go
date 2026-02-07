@@ -1,0 +1,89 @@
+package cli
+
+import (
+	"fmt"
+
+	"github.com/ale/dotfiles/internal/orchestrator"
+	"github.com/ale/dotfiles/internal/profile"
+	"github.com/ale/dotfiles/internal/system"
+	"github.com/ale/dotfiles/internal/tui"
+	"github.com/spf13/cobra"
+)
+
+func newApplyCmd(app *App) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "apply [perfil]",
+		Short: "Aplicar configuracoes do perfil selecionado",
+		Long:  "Aplica todos os modulos do perfil. Sem argumentos, usa o perfil definido em --profile.",
+		Args:  cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// Perfil via argumento tem prioridade
+			if len(args) > 0 {
+				app.Options.Profile = args[0]
+			}
+
+			prof, err := profile.ByName(app.Options.Profile)
+			if err != nil {
+				return err
+			}
+			modules := profile.Resolve(prof, app.Registry)
+
+			if len(modules) == 0 {
+				fmt.Println("Nenhum modulo encontrado para o perfil:", prof.Name)
+				return nil
+			}
+
+			// Configura dry-run se necessario
+			sys := app.System
+			if app.Options.DryRun {
+				sys = system.NewDryRun(app.System, func(msg string) {
+					fmt.Println(msg)
+				})
+			}
+
+			mode := DetectMode(app.Options.Headless)
+
+			if mode == Interactive {
+				return tui.Run(app.Registry, sys, prof)
+			}
+
+			// Modo headless
+			reporter := tui.NewHeadlessReporter()
+			orch := orchestrator.New(sys, reporter)
+
+			fmt.Printf("Aplicando perfil: %s (%d modulos)\n", prof.Name, len(modules))
+			fmt.Println()
+
+			results := orch.Run(cmd.Context(), modules)
+
+			// Resumo
+			fmt.Println()
+			fmt.Println("=== Resumo ===")
+			var errs int
+			for _, r := range results {
+				icon := "OK"
+				if r.Skipped {
+					icon = "SKIP"
+				} else if r.Err != nil {
+					icon = "ERRO"
+					errs++
+				} else if r.Applied {
+					icon = "APLICADO"
+				}
+				fmt.Printf("  [%s] %s\n", icon, r.Module.Name())
+			}
+
+			if errs > 0 {
+				return fmt.Errorf("%d modulo(s) com erro", errs)
+			}
+
+			fmt.Println()
+			fmt.Println("Concluido!")
+			return nil
+		},
+	}
+
+	return cmd
+}
+
+
