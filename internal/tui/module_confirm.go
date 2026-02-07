@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/module"
-	"github.com/ale/dotfiles/internal/profile"
+	"github.com/ale/blueprint/internal/module"
+	"github.com/ale/blueprint/internal/profile"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -62,7 +62,7 @@ func (m moduleConfirmModel) View() string {
 	var b strings.Builder
 
 	if m.autoDetected {
-		b.WriteString(titleStyle.Render("Dotfiles Manager"))
+		b.WriteString(titleStyle.Render("Blueprint"))
 		b.WriteString("\n\n")
 		b.WriteString(fmt.Sprintf("Perfil detectado: %s", highlightStyle.Render(m.profile.Name)))
 		b.WriteString(mutedStyle.Render(fmt.Sprintf(" — %s", m.profile.Description)))

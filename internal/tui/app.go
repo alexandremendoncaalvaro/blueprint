@@ -3,9 +3,9 @@ package tui
 import (
 	"fmt"
 
-	"github.com/ale/dotfiles/internal/module"
-	"github.com/ale/dotfiles/internal/orchestrator"
-	"github.com/ale/dotfiles/internal/profile"
+	"github.com/ale/blueprint/internal/module"
+	"github.com/ale/blueprint/internal/orchestrator"
+	"github.com/ale/blueprint/internal/profile"
 	tea "github.com/charmbracelet/bubbletea"
 )
 

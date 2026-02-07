@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/gnome"
-	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/blueprint/internal/gnome"
+	"github.com/ale/blueprint/internal/module"
 )
 
 const extensionUUID = "clipboard-indicator@tudmotu.com"

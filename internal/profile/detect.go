@@ -1,6 +1,6 @@
 package profile
 
-import "github.com/ale/dotfiles/internal/module"
+import "github.com/ale/blueprint/internal/module"
 
 // Detect escolhe o perfil automaticamente baseado no ambiente.
 //

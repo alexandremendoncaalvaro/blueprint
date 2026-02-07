@@ -18,9 +18,9 @@ func TestMock_FileExists_Files(t *testing.T) {
 
 func TestMock_FileExists_Symlinks(t *testing.T) {
 	mock := NewMock()
-	mock.Symlinks["/home/test/.local/share/gnome-shell/extensions/focus-mode@dotfiles"] = "/repo/configs/focus"
+	mock.Symlinks["/home/test/.local/share/gnome-shell/extensions/focus-mode@blueprint"] = "/repo/configs/focus"
 
-	if !mock.FileExists("/home/test/.local/share/gnome-shell/extensions/focus-mode@dotfiles") {
+	if !mock.FileExists("/home/test/.local/share/gnome-shell/extensions/focus-mode@blueprint") {
 		t.Error("deveria encontrar symlink em Symlinks")
 	}
 }

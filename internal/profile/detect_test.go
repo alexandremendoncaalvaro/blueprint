@@ -3,7 +3,7 @@ package profile
 import (
 	"testing"
 
-	"github.com/ale/dotfiles/internal/system"
+	"github.com/ale/blueprint/internal/system"
 )
 
 func TestDetect_Container(t *testing.T) {

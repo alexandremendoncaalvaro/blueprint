@@ -5,11 +5,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/module"
-	"github.com/ale/dotfiles/internal/orchestrator"
-	"github.com/ale/dotfiles/internal/profile"
-	"github.com/ale/dotfiles/internal/tui"
-	"github.com/ale/dotfiles/internal/version"
+	"github.com/ale/blueprint/internal/module"
+	"github.com/ale/blueprint/internal/orchestrator"
+	"github.com/ale/blueprint/internal/profile"
+	"github.com/ale/blueprint/internal/tui"
+	"github.com/ale/blueprint/internal/version"
 	"github.com/spf13/cobra"
 )
 
@@ -55,7 +55,7 @@ func newStatusCmd(app *App) *cobra.Command {
 
 			// ── Header ──────────────────────────────
 			hostname, _ := os.Hostname()
-			fmt.Printf("\n%s%s dotfiles status%s", colorBold, colorCyan, colorReset)
+			fmt.Printf("\n%s%s blueprint status%s", colorBold, colorCyan, colorReset)
 			if version.Version != "" {
 				fmt.Printf("  %s%s%s", colorDim, version.Version, colorReset)
 			}

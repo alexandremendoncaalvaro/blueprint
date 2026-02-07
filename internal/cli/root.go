@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/blueprint/internal/module"
 	"github.com/spf13/cobra"
 )
 
@@ -15,18 +15,18 @@ type Options struct {
 
 // App agrupa as dependencias necessarias para os comandos.
 type App struct {
-	Registry   *module.Registry
-	System     module.System
-	Options    *Options
-	ConfigDir  string // Caminho para o diretorio configs/ do repo
+	Registry  *module.Registry
+	System    module.System
+	Options   *Options
+	ConfigDir string // Caminho para o diretorio configs/ do repo
 }
 
 // NewRootCmd cria o comando raiz com todas as flags globais.
 func NewRootCmd(app *App) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "dotfiles",
-		Short: "Gerenciador de dotfiles",
-		Long:  "CLI para configurar e manter dotfiles, com suporte a TUI interativo e modo headless.",
+		Use:           "blueprint",
+		Short:         "Gerenciador de configuracoes para Bluefin",
+		Long:          "CLI para configurar e manter seu ambiente Bluefin, com suporte a TUI interativo e modo headless.",
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}

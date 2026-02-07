@@ -1,4 +1,4 @@
-// Entry point do dotfiles manager.
+// Entry point do blueprint.
 // Registra todos os modulos e inicia a CLI.
 package main
 
@@ -7,15 +7,15 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ale/dotfiles/internal/cli"
-	"github.com/ale/dotfiles/internal/module"
-	"github.com/ale/dotfiles/internal/modules/bluefin_update"
-	"github.com/ale/dotfiles/internal/modules/cedilla"
-	"github.com/ale/dotfiles/internal/modules/clipboard_indicator"
-	"github.com/ale/dotfiles/internal/modules/gnome_focus"
-	"github.com/ale/dotfiles/internal/modules/gnome_forge"
-	"github.com/ale/dotfiles/internal/modules/starship"
-	"github.com/ale/dotfiles/internal/system"
+	"github.com/ale/blueprint/internal/cli"
+	"github.com/ale/blueprint/internal/module"
+	"github.com/ale/blueprint/internal/modules/bluefin_update"
+	"github.com/ale/blueprint/internal/modules/cedilla"
+	"github.com/ale/blueprint/internal/modules/clipboard_indicator"
+	"github.com/ale/blueprint/internal/modules/gnome_focus"
+	"github.com/ale/blueprint/internal/modules/gnome_forge"
+	"github.com/ale/blueprint/internal/modules/starship"
+	"github.com/ale/blueprint/internal/system"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 	must(reg.Register(gnome_forge.New()))
 	must(reg.Register(clipboard_indicator.New()))
 
-	focusExtSource := filepath.Join(repoDir, "configs", "gnome-extensions", "focus-mode@dotfiles")
+	focusExtSource := filepath.Join(repoDir, "configs", "gnome-extensions", "focus-mode@blueprint")
 	must(reg.Register(gnome_focus.New(focusExtSource)))
 
 	must(reg.Register(bluefin_update.New()))
@@ -56,10 +56,10 @@ func main() {
 }
 
 // discoverRepoDir tenta encontrar o diretorio raiz do repositorio.
-// Prioridade: DOTFILES_DIR env > diretorio do executavel > ~/dotfiles > diretorio atual.
+// Prioridade: BLUEPRINT_DIR env > diretorio do executavel > ~/blueprint > diretorio atual.
 func discoverRepoDir() string {
 	// 1. Variavel de ambiente
-	if dir := os.Getenv("DOTFILES_DIR"); dir != "" {
+	if dir := os.Getenv("BLUEPRINT_DIR"); dir != "" {
 		return dir
 	}
 
@@ -79,12 +79,12 @@ func discoverRepoDir() string {
 		}
 	}
 
-	// 3. ~/dotfiles
+	// 3. ~/blueprint
 	home, _ := os.UserHomeDir()
 	if home != "" {
-		dotfilesDir := filepath.Join(home, "dotfiles")
-		if isRepoDir(dotfilesDir) {
-			return dotfilesDir
+		blueprintDir := filepath.Join(home, "blueprint")
+		if isRepoDir(blueprintDir) {
+			return blueprintDir
 		}
 	}
 

@@ -1,8 +1,8 @@
 {
-  "uuid": "focus-mode@dotfiles",
+  "uuid": "focus-mode@blueprint",
   "name": "Focus Mode",
   "description": "Fullscreen move janela para workspace exclusivo (estilo macOS)",
   "shell-version": ["45", "46", "47", "48", "49"],
   "version": 1,
-  "url": "https://github.com/ale/dotfiles"
+  "url": "https://github.com/ale/blueprint"
 }

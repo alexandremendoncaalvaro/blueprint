@@ -3,10 +3,10 @@ package cli
 import (
 	"fmt"
 
-	"github.com/ale/dotfiles/internal/orchestrator"
-	"github.com/ale/dotfiles/internal/profile"
-	"github.com/ale/dotfiles/internal/system"
-	"github.com/ale/dotfiles/internal/tui"
+	"github.com/ale/blueprint/internal/orchestrator"
+	"github.com/ale/blueprint/internal/profile"
+	"github.com/ale/blueprint/internal/system"
+	"github.com/ale/blueprint/internal/tui"
 	"github.com/spf13/cobra"
 )
 

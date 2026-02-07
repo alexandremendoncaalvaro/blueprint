@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/module"
-	"github.com/ale/dotfiles/internal/orchestrator"
+	"github.com/ale/blueprint/internal/module"
+	"github.com/ale/blueprint/internal/orchestrator"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 )

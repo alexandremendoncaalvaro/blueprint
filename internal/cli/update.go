@@ -11,7 +11,7 @@ import (
 func newUpdateCmd(app *App) *cobra.Command {
 	return &cobra.Command{
 		Use:   "update",
-		Short: "Atualizar dotfiles (git pull + rebuild)",
+		Short: "Atualizar blueprint (git pull + rebuild)",
 		Long:  "Puxa a versão mais recente do repositório e recompila o binário.",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx := cmd.Context()
@@ -22,7 +22,7 @@ func newUpdateCmd(app *App) *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("nao foi possivel determinar o caminho do executavel: %w", err)
 			}
-			repoDir := filepath.Dir(filepath.Dir(exe)) // bin/dotfiles → repo root
+			repoDir := filepath.Dir(filepath.Dir(exe)) // bin/blueprint → repo root
 
 			// 1. git pull
 			fmt.Printf("  Atualizando repositório em %s...\n", repoDir)
@@ -45,7 +45,7 @@ func newUpdateCmd(app *App) *cobra.Command {
 			fmt.Println("  ✔ Binário atualizado")
 
 			fmt.Println()
-			fmt.Println("  Rode 'dotfiles apply' para aplicar as mudanças.")
+			fmt.Println("  Rode 'blueprint apply' para aplicar as mudanças.")
 			return nil
 		},
 	}

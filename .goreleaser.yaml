@@ -1,10 +1,10 @@
 version: 2
-project_name: dotfiles
+project_name: blueprint
 
 builds:
-  - id: dotfiles
-    main: ./cmd/dotfiles
-    binary: dotfiles
+  - id: blueprint
+    main: ./cmd/blueprint
+    binary: blueprint
     env:
       - CGO_ENABLED=0
     goos:
@@ -14,9 +14,9 @@ builds:
       - arm64
     ldflags:
       - -s -w
-      - -X github.com/ale/dotfiles/internal/version.Version={{.Version}}
-      - -X github.com/ale/dotfiles/internal/version.Commit={{.Commit}}
-      - -X github.com/ale/dotfiles/internal/version.Date={{.Date}}
+      - -X github.com/ale/blueprint/internal/version.Version={{.Version}}
+      - -X github.com/ale/blueprint/internal/version.Commit={{.Commit}}
+      - -X github.com/ale/blueprint/internal/version.Date={{.Date}}
 
 archives:
   - id: default

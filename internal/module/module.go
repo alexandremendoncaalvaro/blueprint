@@ -1,5 +1,5 @@
 // Package module define as interfaces centrais do dominio.
-// Cada modulo de dotfiles implementa essas interfaces para
+// Cada modulo implementa essas interfaces para
 // declarar o que faz, verificar estado e aplicar mudancas.
 package module
 

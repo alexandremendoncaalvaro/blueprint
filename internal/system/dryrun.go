@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/blueprint/internal/module"
 )
 
 // DryRun envolve um System real mas intercepta operacoes de escrita,

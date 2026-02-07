@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/orchestrator"
+	"github.com/ale/blueprint/internal/orchestrator"
 	tea "github.com/charmbracelet/bubbletea"
 )
 

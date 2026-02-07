@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/blueprint/internal/module"
 )
 
 // Module implementa a configuracao do Starship.

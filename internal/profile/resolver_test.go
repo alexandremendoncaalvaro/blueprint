@@ -3,7 +3,7 @@ package profile
 import (
 	"testing"
 
-	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/blueprint/internal/module"
 )
 
 // stubModule e um modulo simples para testes.

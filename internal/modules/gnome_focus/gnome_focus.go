@@ -9,15 +9,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/gnome"
-	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/blueprint/internal/gnome"
+	"github.com/ale/blueprint/internal/module"
 )
 
-const extensionUUID = "focus-mode@dotfiles"
+const extensionUUID = "focus-mode@blueprint"
 
 // Module implementa o modo foco via extensão GNOME Shell.
 type Module struct {
-	// ExtensionSource é o caminho para configs/gnome-extensions/focus-mode@dotfiles/
+	// ExtensionSource é o caminho para configs/gnome-extensions/focus-mode@blueprint/
 	ExtensionSource string
 }
 

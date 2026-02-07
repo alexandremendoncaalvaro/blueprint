@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/blueprint/internal/module"
 )
 
 // DconfEntry representa uma chave/valor no dconf.

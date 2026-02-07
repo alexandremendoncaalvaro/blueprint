@@ -2,7 +2,7 @@
 // Inclui Real (SO), Mock (testes) e DryRun (simulacao).
 package system
 
-import "github.com/ale/dotfiles/internal/module"
+import "github.com/ale/blueprint/internal/module"
 
 // System e um alias para module.System.
 // Mantido para compatibilidade; prefira usar module.System diretamente.

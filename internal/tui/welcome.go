@@ -34,7 +34,7 @@ func (m welcomeModel) Update(msg tea.Msg) (welcomeModel, tea.Cmd) {
 func (m welcomeModel) View() string {
 	var b strings.Builder
 
-	title := titleStyle.Render("Dotfiles Manager")
+	title := titleStyle.Render("Blueprint")
 	b.WriteString(title)
 	b.WriteString("\n\n")
 

@@ -1,7 +1,7 @@
 // Package moduletest fornece helpers de teste para o pacote module.
 package moduletest
 
-import "github.com/ale/dotfiles/internal/module"
+import "github.com/ale/blueprint/internal/module"
 
 // noopReporter implementa module.Reporter descartando todas as mensagens.
 type noopReporter struct{}

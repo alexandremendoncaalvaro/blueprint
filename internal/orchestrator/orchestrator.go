@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ale/dotfiles/internal/module"
+	"github.com/ale/blueprint/internal/module"
 )
 
 // Result armazena o resultado da execucao de um modulo.

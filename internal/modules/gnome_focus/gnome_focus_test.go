@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ale/dotfiles/internal/module"
-	"github.com/ale/dotfiles/internal/module/moduletest"
-	"github.com/ale/dotfiles/internal/system"
+	"github.com/ale/blueprint/internal/module"
+	"github.com/ale/blueprint/internal/module/moduletest"
+	"github.com/ale/blueprint/internal/system"
 )
 
 func TestShouldRun_SkipInContainer(t *testing.T) {
@@ -45,7 +45,7 @@ func TestShouldRun_RunOnGnomeDesktop(t *testing.T) {
 
 func TestCheck_Missing(t *testing.T) {
 	mock := system.NewMock()
-	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
 		Err: fmt.Errorf("not found"),
 	}
 
@@ -61,8 +61,8 @@ func TestCheck_Missing(t *testing.T) {
 
 func TestCheck_Installed(t *testing.T) {
 	mock := system.NewMock()
-	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
-		Output: "focus-mode@dotfiles\n  Enabled: Yes\n  State: ACTIVE\n",
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Output: "focus-mode@blueprint\n  Enabled: Yes\n  State: ACTIVE\n",
 	}
 	mock.ExecResults["dconf read /org/gnome/mutter/dynamic-workspaces"] = system.ExecResult{
 		Output: "true",
@@ -80,8 +80,8 @@ func TestCheck_Installed(t *testing.T) {
 
 func TestCheck_OutOfDate(t *testing.T) {
 	mock := system.NewMock()
-	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
-		Output: "focus-mode@dotfiles\n  Enabled: Yes\n  State: OUT OF DATE\n",
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Output: "focus-mode@blueprint\n  Enabled: Yes\n  State: OUT OF DATE\n",
 	}
 
 	mod := New("/configs/focus-mode")
@@ -96,8 +96,8 @@ func TestCheck_OutOfDate(t *testing.T) {
 
 func TestCheck_Error(t *testing.T) {
 	mock := system.NewMock()
-	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
-		Output: "focus-mode@dotfiles\n  Enabled: Yes\n  State: ERROR\n",
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Output: "focus-mode@blueprint\n  Enabled: Yes\n  State: ERROR\n",
 	}
 
 	mod := New("/configs/focus-mode")
@@ -112,8 +112,8 @@ func TestCheck_Error(t *testing.T) {
 
 func TestCheck_Disabled(t *testing.T) {
 	mock := system.NewMock()
-	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
-		Output: "focus-mode@dotfiles\n  Enabled: No\n  State: INACTIVE\n",
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Output: "focus-mode@blueprint\n  Enabled: No\n  State: INACTIVE\n",
 	}
 
 	mod := New("/configs/focus-mode")
@@ -128,8 +128,8 @@ func TestCheck_Disabled(t *testing.T) {
 
 func TestCheck_DynamicWorkspacesDisabled(t *testing.T) {
 	mock := system.NewMock()
-	mock.ExecResults["gnome-extensions show focus-mode@dotfiles"] = system.ExecResult{
-		Output: "focus-mode@dotfiles\n  Enabled: Yes\n  State: ACTIVE\n",
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Output: "focus-mode@blueprint\n  Enabled: Yes\n  State: ACTIVE\n",
 	}
 	mock.ExecResults["dconf read /org/gnome/mutter/dynamic-workspaces"] = system.ExecResult{
 		Output: "false",
@@ -150,7 +150,7 @@ func TestApply_InstallsAndEnables(t *testing.T) {
 	mock.Commands["gnome-extensions"] = true
 	mock.Commands["dconf"] = true
 
-	mod := New("/repo/configs/gnome-extensions/focus-mode@dotfiles")
+	mod := New("/repo/configs/gnome-extensions/focus-mode@blueprint")
 	reporter := moduletest.NoopReporter()
 
 	err := mod.Apply(context.Background(), mock, reporter)
@@ -159,10 +159,10 @@ func TestApply_InstallsAndEnables(t *testing.T) {
 	}
 
 	// Verifica symlink criado
-	dest := "/home/test/.local/share/gnome-shell/extensions/focus-mode@dotfiles"
+	dest := "/home/test/.local/share/gnome-shell/extensions/focus-mode@blueprint"
 	if target, ok := mock.Symlinks[dest]; !ok {
 		t.Error("symlink nao foi criado")
-	} else if target != "/repo/configs/gnome-extensions/focus-mode@dotfiles" {
+	} else if target != "/repo/configs/gnome-extensions/focus-mode@blueprint" {
 		t.Errorf("symlink aponta para %s", target)
 	}
 

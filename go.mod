@@ -1,4 +1,4 @@
-module github.com/ale/dotfiles
+module github.com/ale/blueprint
 
 go 1.24.2
 

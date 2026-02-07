@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ale/dotfiles/internal/module"
-	"github.com/ale/dotfiles/internal/module/moduletest"
-	"github.com/ale/dotfiles/internal/system"
+	"github.com/ale/blueprint/internal/module"
+	"github.com/ale/blueprint/internal/module/moduletest"
+	"github.com/ale/blueprint/internal/system"
 )
 
 func TestShouldRun_SkipInContainer(t *testing.T) {

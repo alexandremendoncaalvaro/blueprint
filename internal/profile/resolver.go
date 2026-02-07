@@ -1,6 +1,6 @@
 package profile
 
-import "github.com/ale/dotfiles/internal/module"
+import "github.com/ale/blueprint/internal/module"
 
 // Resolve filtra os modulos do registry baseado no perfil.
 // Retorna apenas os modulos cujas tags sao incluidas e nao excluidas pelo perfil.

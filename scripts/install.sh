@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Bootstrap idempotente do dotfiles manager.
+# Bootstrap idempotente do blueprint.
 # Cada etapa verifica se já está resolvida antes de agir.
 # Se um pré-requisito faltar, cobra antes de prosseguir.
 #
 # Uso remoto:
-#   bash -c "$(curl -fsSL https://raw.githubusercontent.com/ale/dotfiles/main/scripts/install.sh)"
+#   bash -c "$(curl -fsSL https://raw.githubusercontent.com/ale/blueprint/main/scripts/install.sh)"
 #
 # Uso local:
 #   ./scripts/install.sh
 
-REPO="https://github.com/ale/dotfiles.git"
-INSTALL_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+REPO="https://github.com/ale/blueprint.git"
+INSTALL_DIR="${BLUEPRINT_DIR:-$HOME/blueprint}"
 LOCAL_BIN="$HOME/.local/bin"
 
 info() { printf '\033[1;34m  ·\033[0m %s\n' "$*"; }
@@ -84,7 +84,7 @@ ensure_repo() {
 ensure_build() {
     command -v go &>/dev/null || fail "Go não encontrado. A etapa 1 falhou?"
 
-    local BIN="$INSTALL_DIR/bin/dotfiles"
+    local BIN="$INSTALL_DIR/bin/blueprint"
 
     # Binário existe e é mais novo que qualquer .go?
     if [[ -x "$BIN" ]]; then
@@ -106,15 +106,15 @@ ensure_build() {
 
 # ── 4. Link no PATH ───────────────────────────────────────────
 ensure_link() {
-    [[ -x "$INSTALL_DIR/bin/dotfiles" ]] || fail "Binário não encontrado. A etapa 3 falhou?"
+    [[ -x "$INSTALL_DIR/bin/blueprint" ]] || fail "Binário não encontrado. A etapa 3 falhou?"
 
     mkdir -p "$LOCAL_BIN"
-    local LINK="$LOCAL_BIN/dotfiles"
+    local LINK="$LOCAL_BIN/blueprint"
 
-    if [[ -L "$LINK" ]] && [[ "$(readlink -f "$LINK")" == "$(readlink -f "$INSTALL_DIR/bin/dotfiles")" ]]; then
-        skip "Link ~/.local/bin/dotfiles"
+    if [[ -L "$LINK" ]] && [[ "$(readlink -f "$LINK")" == "$(readlink -f "$INSTALL_DIR/bin/blueprint")" ]]; then
+        skip "Link ~/.local/bin/blueprint"
     else
-        ln -sf "$INSTALL_DIR/bin/dotfiles" "$LINK"
+        ln -sf "$INSTALL_DIR/bin/blueprint" "$LINK"
         ok "Link criado: $LINK"
     fi
 
@@ -126,7 +126,7 @@ ensure_link() {
 # ── Main ───────────────────────────────────────────────────────
 main() {
     echo
-    printf '\033[1m  Dotfiles Bootstrap\033[0m\n'
+    printf '\033[1m  Blueprint Setup\033[0m\n'
     echo
 
     check_prereqs
@@ -140,7 +140,7 @@ main() {
     echo
 
     # Sem argumento: a CLI detecta o perfil automaticamente
-    exec dotfiles apply
+    exec blueprint apply
 }
 
 main "$@"
