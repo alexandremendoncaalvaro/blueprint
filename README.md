@@ -19,6 +19,7 @@ Já clonou? `make run` faz tudo.
 | **starship** | Instala o prompt [Starship](https://starship.rs), configura `.bashrc` e `.zshrc` |
 | **cedilla-fix** | Corrige cedilha (`ç`) no Wayland/GNOME via `~/.XCompose` |
 | **gnome-forge** | Auto-tiling com [Forge](https://github.com/forge-ext/forge). `Super+setas` = foco, `+Shift` = mover, `+Ctrl` = resize |
+| **clipboard-indicator** | Histórico de clipboard no GNOME com [Clipboard Indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) |
 | **gnome-focus-mode** | `F11` = fullscreen + workspace exclusivo (estilo macOS) |
 | **bluefin-update** | Atualiza rpm-ostree, Flatpak, firmware e Distrobox |
 
