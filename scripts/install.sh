@@ -14,7 +14,6 @@ set -euo pipefail
 REPO="https://github.com/ale/dotfiles.git"
 INSTALL_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 LOCAL_BIN="$HOME/.local/bin"
-GO_VERSION="1.24.2"
 
 info() { printf '\033[1;34m  ·\033[0m %s\n' "$*"; }
 ok()   { printf '\033[1;32m  ✓\033[0m %s\n' "$*"; }
@@ -48,20 +47,15 @@ ensure_go() {
         return
     fi
 
-    info "Instalando Go ${GO_VERSION}..."
-    local ARCH
-    ARCH=$(uname -m)
-    case "$ARCH" in
-        x86_64)  ARCH="amd64" ;;
-        aarch64) ARCH="arm64" ;;
-        *)       fail "Arquitetura não suportada: $ARCH" ;;
-    esac
+    # Homebrew/Linuxbrew disponível? (jeito Bluefin)
+    if command -v brew &>/dev/null; then
+        info "Instalando Go via brew..."
+        brew install go
+        ok "Go instalado via brew"
+        return
+    fi
 
-    curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz" -o /tmp/go.tar.gz
-    sudo tar -C /usr/local -xzf /tmp/go.tar.gz
-    rm -f /tmp/go.tar.gz
-    export PATH="/usr/local/go/bin:$PATH"
-    ok "Go ${GO_VERSION} instalado"
+    fail "Go não encontrado. Instale com: brew install go"
 }
 
 # ── 2. Repositório ─────────────────────────────────────────────

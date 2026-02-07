@@ -26,6 +26,6 @@ clean:
 lint:
 	go vet ./...
 
-## run: Compila e abre o TUI
-run: build
-	./bin/$(BINARY) apply
+## run: Resolve dependencias, compila e abre o TUI
+run:
+	@bash scripts/install.sh

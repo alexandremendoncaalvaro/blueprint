@@ -22,7 +22,7 @@ O programa organiza configurações em **módulos** independentes, filtrados por
 
 ## Instalação
 
-Uma linha — clona, compila e abre o TUI:
+Uma linha — clona, instala Go se precisar, compila e abre o TUI:
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ale/dotfiles/main/scripts/install.sh)"
@@ -35,7 +35,7 @@ cd ~/dotfiles
 make run
 ```
 
-> Requer Go 1.24+. O script instala automaticamente se não encontrar.
+> No Bluefin o Go é instalado via `brew` automaticamente. Em distrobox, usa `/usr/local/go` se disponível.
 
 ## Uso
 
