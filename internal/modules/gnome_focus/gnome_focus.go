@@ -51,29 +51,50 @@ func (m *Module) Check(ctx context.Context, sys module.System) (module.Status, e
 }
 
 func (m *Module) Apply(ctx context.Context, sys module.System, reporter module.Reporter) error {
-	total := 3
+	// Limpar UUID legado (rename dotfiles → blueprint)
+	sys.Exec(ctx, "gnome-extensions", "disable", "focus-mode@dotfiles")
 
 	// 1. Ativar workspaces dinamicos
-	reporter.Step(1, total, "Ativando workspaces dinamicos...")
+	reporter.Step(1, 3, "Ativando workspaces dinamicos...")
 	if _, err := sys.Exec(ctx, "dconf", "write", "/org/gnome/mutter/dynamic-workspaces", "true"); err != nil {
 		return fmt.Errorf("erro ao ativar workspaces dinamicos: %w", err)
 	}
 	reporter.Success("Workspaces dinamicos ativados")
 
-	// 2. Instalar extensao via zip (gnome-extensions install forca o shell a reconhecer)
-	reporter.Step(2, total, "Instalando extensao focus-mode...")
-	zipPath := filepath.Join(os.TempDir(), extensionUUID+".zip")
-	if _, err := sys.Exec(ctx, "zip", "-j", zipPath, filepath.Join(m.ExtensionSource, "metadata.json"), filepath.Join(m.ExtensionSource, "extension.js")); err != nil {
-		return fmt.Errorf("erro ao criar zip da extensao: %w", err)
+	// 2. Instalar ou atualizar extensao
+	_, showErr := sys.Exec(ctx, "gnome-extensions", "show", extensionUUID)
+	if showErr != nil {
+		// Primeira instalacao: zip + install para registrar no GNOME Shell
+		reporter.Step(2, 3, "Instalando extensao focus-mode...")
+		zipPath := filepath.Join(os.TempDir(), extensionUUID+".zip")
+		if _, err := sys.Exec(ctx, "zip", "-j", zipPath, filepath.Join(m.ExtensionSource, "metadata.json"), filepath.Join(m.ExtensionSource, "extension.js")); err != nil {
+			return fmt.Errorf("erro ao criar zip da extensao: %w", err)
+		}
+		if _, err := sys.Exec(ctx, "gnome-extensions", "install", "--force", zipPath); err != nil {
+			return fmt.Errorf("erro ao instalar extensao: %w", err)
+		}
+		reporter.Success("Extensao instalada")
+	} else {
+		// Extensao ja existe: copiar arquivos sem install --force (que reseta o estado)
+		reporter.Step(2, 3, "Atualizando extensao focus-mode...")
+		extDir := filepath.Join(sys.HomeDir(), ".local", "share", "gnome-shell", "extensions", extensionUUID)
+		if err := sys.MkdirAll(extDir, 0o755); err != nil {
+			return fmt.Errorf("erro ao criar diretorio da extensao: %w", err)
+		}
+		for _, fname := range []string{"metadata.json", "extension.js"} {
+			data, err := sys.ReadFile(filepath.Join(m.ExtensionSource, fname))
+			if err != nil {
+				return fmt.Errorf("erro ao ler %s: %w", fname, err)
+			}
+			if err := sys.WriteFile(filepath.Join(extDir, fname), data, 0o644); err != nil {
+				return fmt.Errorf("erro ao copiar %s: %w", fname, err)
+			}
+		}
+		reporter.Success("Extensao atualizada")
 	}
-
-	if _, err := sys.Exec(ctx, "gnome-extensions", "install", "--force", zipPath); err != nil {
-		return fmt.Errorf("erro ao instalar extensao: %w", err)
-	}
-	reporter.Success("Extensao instalada")
 
 	// 3. Ativar
-	reporter.Step(3, total, "Ativando extensao...")
+	reporter.Step(3, 3, "Ativando extensao...")
 	_, err := sys.Exec(ctx, "gnome-extensions", "enable", extensionUUID)
 	if err != nil {
 		reporter.Warn("Extensao sera ativada apos re-login")
@@ -82,6 +103,5 @@ func (m *Module) Apply(ctx context.Context, sys module.System, reporter module.R
 	}
 
 	reporter.Info("F11 agora envia a janela para um workspace exclusivo")
-
 	return nil
 }

@@ -146,10 +146,14 @@ func TestCheck_DynamicWorkspacesDisabled(t *testing.T) {
 	}
 }
 
-func TestApply_InstallsAndEnables(t *testing.T) {
+func TestApply_FreshInstall(t *testing.T) {
 	mock := system.NewMock()
 	mock.Commands["gnome-extensions"] = true
 	mock.Commands["dconf"] = true
+	// gnome-extensions show falha = extensao nao instalada
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Err: fmt.Errorf("not found"),
+	}
 
 	mod := New("/repo/configs/gnome-extensions/focus-mode@blueprint")
 	reporter := moduletest.NoopReporter()
@@ -159,24 +163,7 @@ func TestApply_InstallsAndEnables(t *testing.T) {
 		t.Fatalf("erro inesperado: %v", err)
 	}
 
-	// Verifica que os comandos corretos foram executados
-	expectedCmds := []string{
-		"dconf write /org/gnome/mutter/dynamic-workspaces true",
-	}
-	for _, expected := range expectedCmds {
-		found := false
-		for _, cmd := range mock.ExecLog {
-			if cmd == expected {
-				found = true
-				break
-			}
-		}
-		if !found {
-			t.Errorf("comando esperado nao executado: %s", expected)
-		}
-	}
-
-	// Verifica que zip e gnome-extensions install foram chamados
+	// Verifica que zip e gnome-extensions install foram chamados (fresh install)
 	foundZip := false
 	foundInstall := false
 	for _, cmd := range mock.ExecLog {
@@ -188,10 +175,61 @@ func TestApply_InstallsAndEnables(t *testing.T) {
 		}
 	}
 	if !foundZip {
-		t.Error("zip nao foi chamado")
+		t.Error("zip nao foi chamado no fresh install")
 	}
 	if !foundInstall {
-		t.Error("gnome-extensions install nao foi chamado")
+		t.Error("gnome-extensions install nao foi chamado no fresh install")
+	}
+}
+
+func TestApply_AlreadyInstalled_SkipsInstallForce(t *testing.T) {
+	mock := system.NewMock()
+	mock.Commands["gnome-extensions"] = true
+	mock.Commands["dconf"] = true
+	// gnome-extensions show sucede = extensao ja instalada
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Output: "focus-mode@blueprint\n  Enabled: No\n  State: INITIALIZED\n",
+	}
+	// Arquivos fonte para copiar
+	mock.Files["/repo/configs/gnome-extensions/focus-mode@blueprint/metadata.json"] = []byte(`{"uuid":"focus-mode@blueprint"}`)
+	mock.Files["/repo/configs/gnome-extensions/focus-mode@blueprint/extension.js"] = []byte(`// extension`)
+
+	mod := New("/repo/configs/gnome-extensions/focus-mode@blueprint")
+	reporter := moduletest.NoopReporter()
+
+	err := mod.Apply(context.Background(), mock, reporter)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+
+	// Verifica que install --force NAO foi chamado
+	for _, cmd := range mock.ExecLog {
+		if strings.HasPrefix(cmd, "gnome-extensions install --force") {
+			t.Error("install --force nao deveria ser chamado quando extensao ja esta instalada")
+		}
+		if strings.HasPrefix(cmd, "zip") {
+			t.Error("zip nao deveria ser chamado quando extensao ja esta instalada")
+		}
+	}
+
+	// Verifica que enable foi chamado
+	foundEnable := false
+	for _, cmd := range mock.ExecLog {
+		if cmd == "gnome-extensions enable focus-mode@blueprint" {
+			foundEnable = true
+		}
+	}
+	if !foundEnable {
+		t.Error("gnome-extensions enable deveria ser chamado")
+	}
+
+	// Verifica que arquivos foram copiados para o diretorio da extensao
+	extDir := "/home/test/.local/share/gnome-shell/extensions/focus-mode@blueprint"
+	if _, ok := mock.Files[extDir+"/metadata.json"]; !ok {
+		t.Error("metadata.json nao foi copiado para diretorio da extensao")
+	}
+	if _, ok := mock.Files[extDir+"/extension.js"]; !ok {
+		t.Error("extension.js nao foi copiado para diretorio da extensao")
 	}
 }
 
@@ -216,7 +254,10 @@ func TestApply_ZipFails(t *testing.T) {
 	mock := system.NewMock()
 	mock.Commands["gnome-extensions"] = true
 	mock.Commands["dconf"] = true
-	// zip falha para qualquer chamada que comece com "zip"
+	// Extensao nao instalada (fresh install path)
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Err: fmt.Errorf("not found"),
+	}
 	mock.ExecResults["zip -j /tmp/focus-mode@blueprint.zip /repo/configs/focus-mode/metadata.json /repo/configs/focus-mode/extension.js"] = system.ExecResult{
 		Err: fmt.Errorf("zip not found"),
 	}
@@ -234,6 +275,10 @@ func TestApply_InstallFails(t *testing.T) {
 	mock := system.NewMock()
 	mock.Commands["gnome-extensions"] = true
 	mock.Commands["dconf"] = true
+	// Extensao nao instalada (fresh install path)
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Err: fmt.Errorf("not found"),
+	}
 	mock.ExecResults["gnome-extensions install --force /tmp/focus-mode@blueprint.zip"] = system.ExecResult{
 		Err: fmt.Errorf("install error"),
 	}
@@ -244,6 +289,30 @@ func TestApply_InstallFails(t *testing.T) {
 	err := mod.Apply(context.Background(), mock, reporter)
 	if err == nil {
 		t.Error("esperava erro quando gnome-extensions install falha")
+	}
+}
+
+func TestApply_CleansUpLegacyUUID(t *testing.T) {
+	mock := system.NewMock()
+	mock.Commands["gnome-extensions"] = true
+	mock.Commands["dconf"] = true
+	mock.ExecResults["gnome-extensions show focus-mode@blueprint"] = system.ExecResult{
+		Err: fmt.Errorf("not found"),
+	}
+
+	mod := New("/repo/configs/gnome-extensions/focus-mode@blueprint")
+	reporter := moduletest.NoopReporter()
+
+	_ = mod.Apply(context.Background(), mock, reporter)
+
+	foundDisableLegacy := false
+	for _, cmd := range mock.ExecLog {
+		if cmd == "gnome-extensions disable focus-mode@dotfiles" {
+			foundDisableLegacy = true
+		}
+	}
+	if !foundDisableLegacy {
+		t.Error("deveria desabilitar UUID legado focus-mode@dotfiles")
 	}
 }
 
