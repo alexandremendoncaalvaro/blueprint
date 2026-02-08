@@ -16,6 +16,7 @@ import (
 	"github.com/ale/blueprint/internal/modules/gnome_forge"
 	"github.com/ale/blueprint/internal/modules/passwordless"
 	"github.com/ale/blueprint/internal/modules/starship"
+	"github.com/ale/blueprint/internal/modules/usb_audio"
 	"github.com/ale/blueprint/internal/system"
 )
 
@@ -40,6 +41,7 @@ func main() {
 
 	must(reg.Register(bluefin_update.New()))
 	must(reg.Register(passwordless.New()))
+	must(reg.Register(usb_audio.New()))
 
 	// Configura a app
 	app := &cli.App{
