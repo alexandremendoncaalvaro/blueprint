@@ -13,8 +13,18 @@ import (
 
 // Eventos enviados pela goroutine de processamento.
 
+type logStyle int
+
+const (
+	logInfo logStyle = iota
+	logSuccess
+	logWarn
+	logError
+	logStep
+)
+
 type logEvent struct {
-	style string // "info", "success", "warn", "error", "step"
+	style logStyle
 	text  string
 }
 
@@ -36,23 +46,23 @@ type channelReporter struct {
 }
 
 func (r *channelReporter) Info(msg string) {
-	r.ch <- logEvent{style: "info", text: msg}
+	r.ch <- logEvent{style: logInfo, text: msg}
 }
 
 func (r *channelReporter) Success(msg string) {
-	r.ch <- logEvent{style: "success", text: msg}
+	r.ch <- logEvent{style: logSuccess, text: msg}
 }
 
 func (r *channelReporter) Warn(msg string) {
-	r.ch <- logEvent{style: "warn", text: msg}
+	r.ch <- logEvent{style: logWarn, text: msg}
 }
 
 func (r *channelReporter) Error(msg string) {
-	r.ch <- logEvent{style: "error", text: msg}
+	r.ch <- logEvent{style: logError, text: msg}
 }
 
 func (r *channelReporter) Step(current, total int, msg string) {
-	r.ch <- logEvent{style: "step", text: fmt.Sprintf("[%d/%d] %s", current, total, msg)}
+	r.ch <- logEvent{style: logStep, text: fmt.Sprintf("[%d/%d] %s", current, total, msg)}
 }
 
 // moduleStatus representa o estado de um modulo durante a execucao.
@@ -242,6 +252,7 @@ func (m executeModel) processModules() tea.Cmd {
 			m.ch <- setRunningEvent{index: i}
 
 			// 2. Check
+			var checkStatus module.Status
 			if checker, ok := mod.(module.Checker); ok {
 				status, err := checker.Check(ctx, m.sys)
 				if err != nil {
@@ -255,6 +266,7 @@ func (m executeModel) processModules() tea.Cmd {
 					}
 					continue
 				}
+				checkStatus = status
 
 				if status.Kind == module.Installed {
 					m.ch <- resultEvent{
@@ -276,6 +288,7 @@ func (m executeModel) processModules() tea.Cmd {
 						index: i,
 						result: orchestrator.Result{
 							Module: mod,
+							Status: checkStatus,
 							Err:    err,
 						},
 					}
@@ -285,6 +298,7 @@ func (m executeModel) processModules() tea.Cmd {
 					index: i,
 					result: orchestrator.Result{
 						Module:  mod,
+						Status:  checkStatus,
 						Applied: true,
 					},
 				}
@@ -316,13 +330,13 @@ func (m executeModel) waitForEvent() tea.Cmd {
 // formatLog formata uma logEvent para exibicao.
 func (m executeModel) formatLog(ev logEvent) string {
 	switch ev.style {
-	case "success":
+	case logSuccess:
 		return successStyle.Render("[OK] " + ev.text)
-	case "warn":
+	case logWarn:
 		return warningStyle.Render("[WARN] " + ev.text)
-	case "error":
+	case logError:
 		return errorStyle.Render("[ERRO] " + ev.text)
-	case "step":
+	case logStep:
 		return highlightStyle.Render(ev.text)
 	default:
 		return mutedStyle.Render(ev.text)
