@@ -9,28 +9,28 @@ import (
 var (
 	Full = Profile{
 		Name:        "full",
-		Description: "Desktop Bluefin completo (shell + desktop + sistema)",
-		Tags:        []string{"shell", "desktop", "system"},
+		Description: "Desktop Bluefin completo (shell + desktop + sistema + containers)",
+		Tags:        []string{"shell", "desktop", "system", "containers"},
 	}
 
 	Minimal = Profile{
 		Name:        "minimal",
 		Description: "Minimo para devcontainer/CI (apenas shell)",
 		Tags:        []string{"shell"},
-		ExcludeTags: []string{"desktop", "system"},
+		ExcludeTags: []string{"desktop", "system", "containers"},
 	}
 
 	Server = Profile{
 		Name:        "server",
-		Description: "Servidor sem desktop (shell + sistema)",
-		Tags:        []string{"shell", "system"},
+		Description: "Servidor sem desktop (shell + sistema + containers)",
+		Tags:        []string{"shell", "system", "containers"},
 		ExcludeTags: []string{"desktop"},
 	}
 
 	WSL = Profile{
 		Name:        "wsl",
 		Description: "Ambiente WSL2 (shell + containers)",
-		Tags:        []string{"shell", "wsl"},
+		Tags:        []string{"shell", "wsl", "containers"},
 		ExcludeTags: []string{"desktop", "system"},
 	}
 )

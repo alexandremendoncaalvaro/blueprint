@@ -41,6 +41,7 @@ O perfil é detectado automaticamente:
 | Onde você está | Perfil | Módulos |
 |----------------|--------|---------|
 | Desktop Bluefin | `full` | Todos |
+| WSL2 (Ubuntu/Debian) | `wsl` | Shell + Containers |
 | Container / Distrobox | `minimal` | Só shell (starship) |
 | Sem sessão gráfica | `server` | Shell + sistema |
 

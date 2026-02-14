@@ -24,7 +24,7 @@ func New(setupScript string) *Module {
 
 func (m *Module) Name() string        { return "devbox" }
 func (m *Module) Description() string { return "Distrobox de desenvolvimento (criacao + provisionamento)" }
-func (m *Module) Tags() []string      { return []string{"wsl"} }
+func (m *Module) Tags() []string      { return []string{"containers", "wsl"} }
 
 func (m *Module) ShouldRun(_ context.Context, sys module.System) (bool, string) {
 	if sys.IsContainer() {
@@ -128,8 +128,12 @@ func (m *Module) Apply(ctx context.Context, sys module.System, reporter module.R
 	reporter.Step(3, 3, "Corrigindo ownership do .vscode-server...")
 	vscodeDir := filepath.Join(containerHome, ".vscode-server")
 	if sys.FileExists(vscodeDir) {
+		user := sys.Env("USER")
+		if user == "" {
+			user = "1000" // Fallback seguro
+		}
 		_, err = sys.Exec(ctx, "distrobox", "enter", "devbox", "--",
-			"sudo", "chown", "-R", "ale:ale", vscodeDir)
+			"sudo", "chown", "-R", fmt.Sprintf("%s:%s", user, user), vscodeDir)
 		if err != nil {
 			reporter.Warn(fmt.Sprintf("chown .vscode-server falhou: %v", err))
 		} else {
