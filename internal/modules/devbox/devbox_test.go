@@ -96,6 +96,7 @@ func TestCheck_NoFalsePositive(t *testing.T) {
 
 func TestApply_Success(t *testing.T) {
 	mock := system.NewMock()
+	mock.EnvVars["USER"] = "ale"
 
 	mod := New("/repo/configs/devbox/setup-dev.sh")
 	reporter := moduletest.NoopReporter()
@@ -111,7 +112,7 @@ func TestApply_Success(t *testing.T) {
 	}
 
 	expected := []string{
-		"distrobox create --name devbox --image quay.io/toolbx/ubuntu-toolbox:24.04 --home /home/test/.distrobox/devbox --yes",
+		"distrobox create --name devbox --image quay.io/toolbx/ubuntu-toolbox:24.04 --yes --home /home/test/.distrobox/devbox",
 		"distrobox enter devbox -- bash /repo/configs/devbox/setup-dev.sh",
 	}
 	for i, cmd := range expected {
@@ -127,6 +128,7 @@ func TestApply_Success(t *testing.T) {
 
 func TestApply_ChownsVscodeServer(t *testing.T) {
 	mock := system.NewMock()
+	mock.EnvVars["USER"] = "ale"
 	// Simula .vscode-server existente (de sessao anterior como root)
 	mock.Files["/home/test/.distrobox/devbox/.vscode-server"] = []byte{}
 
@@ -150,9 +152,36 @@ func TestApply_ChownsVscodeServer(t *testing.T) {
 	}
 }
 
+func TestApply_SuccessWSL(t *testing.T) {
+	mock := system.NewMock()
+	mock.WSL = true
+	mock.EnvVars["USER"] = "ale"
+	mock.Commands["podman"] = true
+
+	mod := New("/repo/configs/devbox/setup-dev.sh")
+	reporter := moduletest.NoopReporter()
+
+	err := mod.Apply(context.Background(), mock, reporter)
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+
+	// create + provision
+	if len(mock.ExecLog) != 2 {
+		t.Errorf("esperava 2 comandos executados, obteve %d: %v", len(mock.ExecLog), mock.ExecLog)
+	}
+
+	// No WSL usamos sh -c para injetar ENV
+	expectedCreate := "sh -c DBX_CONTAINER_MANAGER=podman distrobox create --name devbox --image quay.io/toolbx/ubuntu-toolbox:24.04 --yes"
+	if mock.ExecLog[0] != expectedCreate {
+		t.Errorf("comando create WSL: esperava %q, obteve %q", expectedCreate, mock.ExecLog[0])
+	}
+}
+
 func TestApply_CreateFailsContinues(t *testing.T) {
 	mock := system.NewMock()
-	mock.ExecResults["distrobox create --name devbox --image quay.io/toolbx/ubuntu-toolbox:24.04 --home /home/test/.distrobox/devbox --yes"] = system.ExecResult{
+	mock.EnvVars["USER"] = "ale"
+	mock.ExecResults["distrobox create --name devbox --image quay.io/toolbx/ubuntu-toolbox:24.04 --yes --home /home/test/.distrobox/devbox"] = system.ExecResult{
 		Err: fmt.Errorf("container already exists"),
 	}
 
