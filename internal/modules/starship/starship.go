@@ -25,7 +25,7 @@ func New(configSource string) *Module {
 
 func (m *Module) Name() string        { return "starship" }
 func (m *Module) Description() string { return "Prompt Starship (instalacao + config + shell init)" }
-func (m *Module) Tags() []string      { return []string{"shell"} }
+func (m *Module) Tags() []string      { return []string{"shell", "wsl"} }
 
 func (m *Module) Check(ctx context.Context, sys module.System) (module.Status, error) {
 	hasCmd := sys.CommandExists("starship")

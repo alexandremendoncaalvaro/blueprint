@@ -24,7 +24,7 @@ func New(setupScript string) *Module {
 
 func (m *Module) Name() string        { return "devbox" }
 func (m *Module) Description() string { return "Distrobox de desenvolvimento (criacao + provisionamento)" }
-func (m *Module) Tags() []string      { return []string{"system"} }
+func (m *Module) Tags() []string      { return []string{"wsl"} }
 
 func (m *Module) ShouldRun(_ context.Context, sys module.System) (bool, string) {
 	if sys.IsContainer() {
